@@ -13,6 +13,8 @@ import Googer from './components/Googer';
 import ModalTest from './components/ModalTest';
 import Upload from './components/Upload';
 import Upload64 from './components/Upload64';
+import CreateUser from './components/CreateUserS3';
+import MyChart from './components/Chart';
 
 function App() {
   const dispatch = useDispatch();
@@ -44,6 +46,9 @@ function App() {
           <Route exact path='/googer'>
             <Googer />
           </Route>
+          <Route exact path='/chart'>
+            <MyChart />
+          </Route>
           <Route exact path='/modal'>
             <ModalTest />
           </Route>
@@ -55,6 +60,9 @@ function App() {
           </Route>
           <Route exact path='/upload-base'>
             <Upload64 />
+          </Route>
+          <Route exact path='/create-user'>
+            <CreateUser />
           </Route>
         </Switch>
       )}

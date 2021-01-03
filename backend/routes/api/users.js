@@ -1,6 +1,8 @@
 const express = require('express');
 const { check } = require('express-validator');
 const asyncHandler = require('express-async-handler');
+const fileUpload = require('express-fileupload');
+const { singleMulterUpload } = require('../../utils/awsS3');
 
 const { handleValidationErrors } = require('../../utils/validation');
 const { setTokenCookie, requireAuth } = require('../../utils/auth');
@@ -14,7 +16,8 @@ const multerS3 = require('multer-s3');
 const aws = require('aws-sdk');
 
 const router = express.Router();
-router.use(uploaded.array());
+// router.use(uploaded.array());
+router.use(fileUpload());
 
 const validateSignup = [
   check('email')
@@ -49,46 +52,69 @@ router.post(
   })
 );
 
-//s3 setup
-const s3 = new aws.S3({
-  accessKeyId: process.env.KEY_ID,
-  secretAccessKey: process.env.SECRET,
-  region: process.env.REGION
-});
+//soonmi&james setup aws
+router.post(
+  '/single',
+  singleMulterUpload('image'),
+  validateSignup,
+  asyncHandler(async (req, res) => {
+    const { email, password, username } = req.body;
+    const profileImageUrl = await singlePublicFileUpload(req.file);
+    const user = await User.signup({
+      username,
+      email,
+      password,
+      profileImageUrl
+    });
 
-const upload = multer({
-  storage: multerS3({
-    s3: s3,
-    bucket: process.env.BUCKET_NAME,
-    contentType: multerS3.AUTO_CONTENT_TYPE,
-    key: function (req, file, cb) {
-      cb(null, Date.now().toString());
-    },
-    acl: 'public-read'
+    setTokenCookie(res, user);
+
+    return res.json({
+      user
+    });
   })
-});
+);
 
-const uploader = upload.single('image');
+//my s3 setup
+// const s3 = new aws.S3({
+//   accessKeyId: process.env.KEY_ID,
+//   secretAccessKey: process.env.SECRET,
+//   region: process.env.REGION
+// });
 
-router.post('/uploads', (req, res) => {
-  uploader(req, res, function (error) {
-    if (error) {
-      console.log(error);
-    }
-    console.log('i hit but no upload');
-    // console.log(req);
-    console.log('no file', req.file);
-  });
+// const upload = multer({
+//   storage: multerS3({
+//     s3: s3,
+//     bucket: process.env.BUCKET_NAME,
+//     contentType: multerS3.AUTO_CONTENT_TYPE,
+//     key: function (req, file, cb) {
+//       cb(null, Date.now().toString());
+//     },
+//     acl: 'public-read'
+//   })
+// });
 
-  // console.log(req);
+// const uploader = upload.single('image');
 
-  // const id = uuidv4();
-  // await images.create({
-  //   id,
-  //   key: req.file.location,
-  //   bucket: process.env.BUCKET_NAME
-  // });
-});
+// router.post('/uploads', (req, res) => {
+//   uploader(req, res, function (error) {
+//     if (error) {
+//       console.log(error);
+//     }
+//     console.log('i hit but no upload');
+//     // console.log(req);
+//     console.log('no file', req.file);
+//   });
+
+//   console.log(req);
+
+//   const id = uuidv4();
+//   await images.create({
+//     id,
+//     key: req.file.location,
+//     bucket: process.env.BUCKET_NAME
+//   });
+// });
 
 router.get('/uploads', async (req, res) => {
   let uploadList = await images.findAll({});

@@ -11,7 +11,15 @@ function Navigation({ isLoaded }) {
   let sessionLinks;
   if (sessionUser) {
     sessionLinks = (
-      <div style={{ display: 'flex', flexDirection: 'row' }}>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          flexWrap: 'wrap',
+          marginBottom: '10px',
+          borderBottom: '2px solid black'
+        }}
+      >
         <li>
           <NavLink exact to='/'>
             Home
@@ -27,6 +35,11 @@ function Navigation({ isLoaded }) {
           </NavLink>
         </li>
         <li>
+          <NavLink exact to='/chart'>
+            Chart
+          </NavLink>
+        </li>
+        <li>
           <NavLink exact to='/appointments'>
             Appointments
           </NavLink>
@@ -38,7 +51,7 @@ function Navigation({ isLoaded }) {
         </li>
         <li>
           <NavLink exact to='/googer'>
-            Googer
+            Map
           </NavLink>
         </li>
         <li>
@@ -49,6 +62,11 @@ function Navigation({ isLoaded }) {
         <li>
           <NavLink exact to='/upload-base'>
             Upload64
+          </NavLink>
+        </li>
+        <li>
+          <NavLink exact to='/create-user'>
+            CreateUser Upload
           </NavLink>
         </li>
       </div>

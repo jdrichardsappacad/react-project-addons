@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const apiRouter = require('./api');
+// const { singleMulterUpload } = require('../utils/awsS3');
 
 router.use('/api', apiRouter);
 
